@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: webhook_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: webhook_gateway
+      POSTGRES_USER: webhook
+      POSTGRES_PASSWORD: webhook
+    ports:
+      - "5434:5432"
+    volumes:
+      - webhook_pg_data:/var/lib/postgresql/data
+    networks:
+      - webhook_net
+      # Also join the PHP project's network if running alongside it, so
+      # this service can reach the shared Redis instance on port 6380:
+      # `docker network connect pgs_net webhook_postgres` (see README)
+
+volumes:
+  webhook_pg_data:
+
+networks:
+  webhook_net:
+    driver: bridge
